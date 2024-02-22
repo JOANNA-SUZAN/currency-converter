@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currency Converter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #ffc0cb; /* Light pink shade */
+    }
+
+    .converter {
+        background-color: #ff69b4; /* Pink shade */
+        padding: 100px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    input[type="number"] {
+        width: 100px;
+    }
+</style>
+</head>
+<body>
+<div class="converter">
+    <h2>Currency Converter</h2>
+    <div>
+        <label for="from">From:</label>
+        <select id="from">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="JPY">JPY</option>
+            <option value="KRW">KRW</option>
+            <option value="AED">AED</option>
+            <option value="GBP">GBP</option>
+            <option value="USD">USD</option>
+            <option value="KWD">KWD</option>
+            <option value="ILS">ILS</option>
+            <option value="MMK">MMK</option>
+            <option value="BDT">BDT</option>
+            <option value="JPY">JPY</option>
+            <option value="YER">YER</option>
+        </select>
+        <input type="number" id="amount" placeholder="Amount">
+    </div>
+    <div>
+        <label for="to">To:</label>
+        <select id="to">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="JPY">JPY</option>
+            <option value="KRW">KRW</option>
+            <option value="AED">AED</option>
+            <option value="GBP">GBP</option>
+            <option value="USD">USD</option>
+            <option value="KWD">KWD</option>
+            <option value="ILS">ILS</option>
+            <option value="MMK">MMK</option>
+            <option value="BDT">BDT</option>
+            <option value="JPY">JPY</option>
+            <option value="YER">YER</option>
+        </select>
+        <input type="number" id="result" disabled>
+    </div>
+    <button onclick="convert()">Convert</button>
+</div>
+
+<script>
+    const exchangeRates = {
+        USD: { EUR: 0.89, GBP: 0.77, INR: 73.57, JPY: 106.94, KRW: 1184.10, AED: 3.67, KWD: 0.30, ILS: 3.27, MMK: 1528.97, BDT: 85.07, YER: 250.35 },
+        EUR: { USD: 1.12, GBP: 0.87, INR: 88.04, JPY: 121.04, KRW: 1345.22, AED: 4.11, KWD: 0.34, ILS: 3.76, MMK: 1753.61, BDT: 97.17, YER: 285.75 },
+        GBP: { USD: 1.30, EUR: 1.15, INR: 100.41, JPY: 137.97, KRW: 1531.89, AED: 4.69, KWD: 0.39, ILS: 4.33, MMK: 2016.25, BDT: 111.94, YER: 329.25 },
+        INR: { USD: 0.014, EUR: 0.011, GBP: 0.010, JPY: 1.38, KRW: 15.33, AED: 0.047, KWD: 0.004, ILS: 0.043, MMK: 2.00, BDT: 0.11, YER: 0.33 },
+        JPY: { USD: 0.0094, EUR: 0.0083, GBP: 0.0073, INR: 0.72, KRW: 11.10, AED: 0.034, KWD: 0.0028, ILS: 0.031, MMK: 1.44, BDT: 0.080, YER: 0.23 },
+        KRW: { USD: 0.00084, EUR: 0.00074, GBP: 0.00065, INR: 0.065, JPY: 0.090, AED: 0.0031, KWD: 0.00026, ILS: 0.0029, MMK: 0.14, BDT: 0.0077, YER: 0.022 },
+        AED: { USD: 0.27, EUR: 0.24, GBP: 0.21, INR: 21.19, JPY: 29.77, KRW: 322.78, KWD: 0.083, ILS: 0.91, MMK: 42.41, BDT: 2.35, YER: 6.90 },
+        KWD: { USD: 3.30, EUR: 2.90, GBP: 2.55, INR: 245.67, JPY: 348.91, KRW: 3804.32, AED: 12.07, ILS: 11.10, MMK: 518.41, BDT: 28.74, YER: 84.42 },
+        ILS: { USD: 0.30, EUR: 0.27, GBP: 0.24, INR: 23.79, JPY: 33.44, KRW: 362.70, AED: 1.10, KWD: 0.090, MMK: 46.89, BDT: 2.60, YER: 7.64 },
+        MMK: { USD: 0.00065, EUR: 0.00057, GBP: 0.00050, INR: 0.50, JPY: 0.70, KRW: 6.91, AED: 0.024, KWD: 0.0019, ILS: 0.021, BDT: 0.055, YER: 0.16 },
+        BDT: { USD: 0.012, EUR: 0.011, GBP: 0.0090, INR: 0.90, JPY: 1.26, KRW: 12.39, AED: 0.42, KWD: 0.034, ILS: 0.037, MMK: 18.18, YER: 0.53 },
+        YER: { USD: 0.0040, EUR: 0.0035, GBP: 0.0031, INR: 3.01, JPY: 4.23, KRW: 41.66, AED: 0.14, KWD: 0.011, ILS: 0.012, MMK: 6.08, BDT: 1.88 }
+    };
+
+    function convert() {
+        const fromCurrency = document.getElementById('from').value;
+        const toCurrency = document.getElementById('to').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        
+        if (isNaN(amount)) {
+            alert('Please enter a valid amount.');
+            return;
+        }
+        
+        const exchangeRate = exchangeRates[fromCurrency][toCurrency];
+        const result = amount * exchangeRate;
+        
+        document.getElementById('result').value = result.toFixed(2);
+    }
+</script>
+</body>
+</html>
